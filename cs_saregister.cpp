@@ -3,17 +3,17 @@
 class CommandCSSARegister : public Command
 {
  public:
-	CommandCSSARegister(Module *creator) : Command(creator, "chanserv/saregister", 2, 2)
+	CommandCSSARegister(Module *creator) : Command(creator, "chanserv/saregister", 3, 3)
 	{
 		this->SetDesc(_("Registers another channel."));
-		this->SetSyntax(_("\037channel\037 \037description\037"));
+		this->SetSyntax(_("\037nick\037 \037channel\037 \037description\037"));
 	}
   
   void Execute(CommandSource &source, const std::vector<Anope::string> &params) anope_override
 	{
-		
-		const Anope::string &chan = params[0];
-		const Anope::string &chdesc = params.size() > 1 ? params[1] : "";
+		const Anope::string &nick = params[0];
+		const Anope::string &chan = params[1];
+		const Anope::string &chdesc = params.size() > 1 ? params[2] : "";
 		
 		const Anope::string &csregister = Config->GetModule(this->owner)->Get<const Anope::string>("registration");
 		
