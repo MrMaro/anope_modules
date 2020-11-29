@@ -83,6 +83,7 @@ class CSSARegister : public Module
 		commandcssaregister(this)
 	{
 		this->SetAuthor("Maro");
+		this->SetVersion("1.0");
 	}
 };
 
