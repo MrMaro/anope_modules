@@ -11,8 +11,78 @@ class CommandCSSARegister : public Command
   
   void Execute(CommandSource &source, const std::vector<Anope::string> &params) anope_override
 	{
-		User *u = 0;
-		Anope::string u_nick = params[0];
-		size_t nicklen = u_nick.length();
-		Anope::string pass = params[1];
-		Anope::string email = params[2];
+		
+		const Anope::string &chan = params[0];
+		const Anope::string &chdesc = params.size() > 1 ? params[1] : "";
+		
+		User *u = source.GetUser();
+		NickCore *nc = source.nc;
+		Channel *c = Channel::Find(params[0]);
+		ChannelInfo *ci = ChannelInfo::Find(params[0]);
+		
+		const Anope::string &csregister = Config->GetModule(this->owner)->Get<const Anope::string>("registration");
+
+               if (Anope::ReadOnly)
+			source.Reply(_("Sorry, channel registration is temporarily disabled."));
+		else if (chan[0] != '#')
+			source.Reply(CHAN_SYMBOL_REQUIRED);
+		else if (!IRCD->IsChannelValid(chan))
+			source.Reply(CHAN_X_INVALID, chan.c_str());
+		else if (!c && u)
+			source.Reply(CHAN_X_NOT_IN_USE, chan.c_str());
+		else if (ci)
+			source.Reply(_("Channel \002%s\002 is already registered!"), chan.c_str());
+		
+		else
+		{
+			ci = new ChannelInfo(chan);
+			ci->SetFounder(nc);
+			ci->desc = chdesc;
+
+			if (c && !c->topic.empty())
+			{
+				ci->last_topic = c->topic;
+				ci->last_topic_setter = c->topic_setter;
+				ci->last_topic_time = c->topic_time;
+			}
+			else
+				ci->last_topic_setter = source.service->nick;
+			
+			Log(LOG_COMMAND, source, this, ci);
+			source.Reply(_("Channel \002%s\002 registered under your account: %s"), chan.c_str(), nc->display.c_str());
+			
+			if (c)
+			{
+				c->CheckModes();
+				if (u)
+					c->SetCorrectModes(u, true);
+			}
+		}
+	}
+			
+			
+		bool OnHelp(CommandSource &source, const Anope::string &subcommand) anope_override
+	{
+		this->SendSyntax(source);
+			source.Reply(" ");
+			source.Reply(_("This module lets a services operator with the\n"
+					"chanserv/saregister privileges register a\n"
+					"channel other than their own)."));
+		return true;
+	}
+};
+    
+class CSSARegister : public Module
+{
+	CommandCSSARegister commandcssaregister;
+
+ public:
+	CSSARegister(const Anope::string &modname, const Anope::string &creator) : Module(modname, creator, THIRD),
+		commandcssaregister(this)
+	{
+		this->SetAuthor("Maro");
+	}
+};
+
+MODULE_INIT(CSSARegister)
+			
