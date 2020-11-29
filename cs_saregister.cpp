@@ -1,5 +1,7 @@
 #include "module.h"
 
+static bool SendRegmail(User *u, const NickAlias *na, BotInfo *bi);
+
 class CommandCSSARegister : public Command
 {
  public:
@@ -11,14 +13,15 @@ class CommandCSSARegister : public Command
   
   void Execute(CommandSource &source, const std::vector<Anope::string> &params) anope_override
 	{
-		
+		User *u = 0;
+		const Anope::string u_nick = params[0];
 		const Anope::string &chan = params[1];
 		const Anope::string &chdesc = params.size() > 1 ? params[2] : "";
 		unsigned maxregistered = Config->GetModule("chanserv")->Get<unsigned>("maxregistered");
 		
 		const Anope::string &csregister = Config->GetModule(this->owner)->Get<const Anope::string>("registration");
 		
-		User *u2 = source.GetUser();
+		User *u = source.GetUser();
 		NickCore *nc = new NickCore(u_nick);
 		NickAlias *na = new NickAlias(u_nick, nc);
 		Channel *c = Channel::Find(params[0]);
