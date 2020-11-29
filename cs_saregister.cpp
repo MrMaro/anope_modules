@@ -11,7 +11,7 @@ class CommandCSSARegister : public Command
   
   void Execute(CommandSource &source, const std::vector<Anope::string> &params) anope_override
 	{
-		const Anope::string &u_nick = params[0];
+		const Anope::string &i_nick = params[0];
 		const Anope::string &chan = params[1];
 		const Anope::string &chdesc = params.size() > 1 ? params[2] : "";
 		
