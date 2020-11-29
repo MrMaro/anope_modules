@@ -53,8 +53,6 @@ class CommandCSSARegister : public Command
 			
 			FOREACH_MOD(OnChanRegistered, (ci));
 			
-			BotInfo *bi;
-			
 			if (c)
 			{
 				c->CheckModes();
