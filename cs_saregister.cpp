@@ -3,7 +3,7 @@
 class CommandCSSARegister : public Command
 {
  public:
-	CommandCSSARegister(Module *creator) : Command(creator, "chanserv/saregister", 3, 3)
+	CommandCSSARegister(Module *creator) : Command(creator, "chanserv/saregister", 2, 2)
 	{
 		this->SetDesc(_("Registers another channel."));
 		this->SetSyntax(_("\037channel\037 \037description\037"));
