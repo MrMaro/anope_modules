@@ -15,6 +15,8 @@ class CommandCSSARegister : public Command
 		const Anope::string &chan = params[0];
 		const Anope::string &chdesc = params.size() > 1 ? params[1] : "";
 		
+		const Anope::string &csregister = Config->GetModule(this->owner)->Get<const Anope::string>("registration");
+		
 		User *u = source.GetUser();
 		NickCore *nc = source.nc;
 		Channel *c = Channel::Find(params[0]);
@@ -50,6 +52,8 @@ class CommandCSSARegister : public Command
 			source.Reply(_("Channel \002%s\002 registered under your account: %s"), chan.c_str(), nc->display.c_str());
 			
 			FOREACH_MOD(OnChanRegistered, (ci));
+			
+			BotInfo *bi;
 			
 			if (c)
 			{
