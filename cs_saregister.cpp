@@ -19,8 +19,6 @@ class CommandCSSARegister : public Command
 		NickCore *nc = source.nc;
 		Channel *c = Channel::Find(params[0]);
 		ChannelInfo *ci = ChannelInfo::Find(params[0]);
-		
-		const Anope::string &csregister = Config->GetModule(this->owner)->Get<const Anope::string>("registration");
 
                if (Anope::ReadOnly)
 			source.Reply(_("Sorry, channel registration is temporarily disabled."));
@@ -51,6 +49,8 @@ class CommandCSSARegister : public Command
 			Log(LOG_COMMAND, source, this, ci);
 			source.Reply(_("Channel \002%s\002 registered under your account: %s"), chan.c_str(), nc->display.c_str());
 			
+			FOREACH_MOD(OnChanRegistered, (ci));
+			
 			if (c)
 			{
 				c->CheckModes();
@@ -67,7 +67,7 @@ class CommandCSSARegister : public Command
 			source.Reply(" ");
 			source.Reply(_("This module lets a services operator with the\n"
 					"chanserv/saregister privileges register a\n"
-					"channel other than their own)."));
+					"other channel)."));
 		return true;
 	}
 };
