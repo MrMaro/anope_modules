@@ -1,1 +1,10 @@
+#include "module.h"
 
+class CommandCSSARegister : public Command
+{
+ public:
+	CommandCSSARegister(Module *creator) : Command(creator, "chanserv/saregister", 3, 3)
+	{
+		this->SetDesc(_("Registers another channel."));
+		this->SetSyntax(_("\037nick\037 \037channel\037 \037description\037"));
+	}
