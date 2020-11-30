@@ -13,22 +13,24 @@ class CommandCSSARegister : public Command
   
   void Execute(CommandSource &source, const std::vector<Anope::string> &params) anope_override
 	{
-		User *u = source.GetUser();
 		const Anope::string u_nick = params[0];
 		const Anope::string &chan = params[1];
 		const Anope::string &chdesc = params.size() > 1 ? params[2] : "";
 		
 		const Anope::string &csregister = Config->GetModule(this->owner)->Get<const Anope::string>("registration");
 		
-		NickCore *nc = new NickCore(u_nick);
-		NickAlias *na = new NickAlias(u_nick, nc);
-		Channel *c = Channel::Find(params[0]);
-		ChannelInfo *ci = ChannelInfo::Find(params[0]);
+		User *u;
+		NickCore *nc; 
+		NickAlias *na; 
+		Channel *c;
+		ChannelInfo *ci;
 
                if (Anope::ReadOnly)
 			source.Reply(_("Sorry, channel registration is temporarily disabled."));
 		else if (nc->HasExt("UNCONFIRMED"))
 			source.Reply(_("You must confirm your account before you can register a channel."));
+		else if (chan[0] == '&')
+			source.Reply(_("Local channels cannot be registered."));
 		else if (chan[0] != '#')
 			source.Reply(CHAN_SYMBOL_REQUIRED);
 		else if (!IRCD->IsChannelValid(chan))
@@ -53,7 +55,7 @@ class CommandCSSARegister : public Command
 				ci->last_topic_setter = source.service->nick;
 			
 			Log(LOG_COMMAND, source, this, ci);
-			source.Reply(_("Channel \002%s\002 has been registered to: %s"), chan.c_str(), nc->display.c_str());
+			source.Reply(_("%s: Channel '%s' registered by %s!%s@%s on behalf of %s(%s), chan.c_str(), nc->display.c_str());
 			
 			FOREACH_MOD(OnChanRegistered, (ci));
 			
