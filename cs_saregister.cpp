@@ -2,8 +2,6 @@
 
 static bool SendRegmail(User *u, const NickAlias *na, BotInfo *bi);
 
-static Channel *FindOrCreate(const Anope::string &name, bool &created, time_t ts = Anope::CurTime);
-
 class CommandCSSARegister : public Command
 {
  public:
@@ -21,6 +19,7 @@ class CommandCSSARegister : public Command
 		
 		const Anope::string &csregister = Config->GetModule(this->owner)->Get<const Anope::string>("registration");
 		
+		User *u = 0;
 		NickCore *nc = new NickCore(u_nick);
 		NickAlias *na = new NickAlias(u_nick, nc);
 		Channel *c = Channel::Find(params[0]);
@@ -56,7 +55,7 @@ class CommandCSSARegister : public Command
 				ci->last_topic_setter = source.service->nick;
 			
 			Log(LOG_COMMAND, source, this, ci);
-			source.Reply("%s: Channel '%s' registered by %s!%s@%s on behalf of %s(%s), chan.c_str(), nc->display.c_str());
+			source.Reply(_("Channel \002%s\002 has been registered to: %s"), chan.c_str(), nc->display.c_str());
 			
 			FOREACH_MOD(OnChanRegistered, (ci));
 			
