@@ -1,10 +1,10 @@
 #include "module.h"
 
-class CommandCSSARegister : public Command
+class CommandNSSetNoop : public Command
 {
  public:
-	CommandCSSARegister(Module *creator) : Command(creator, "chanserv/saregister", 3, 3)
+	CommandNSSetNoop(Module *creator) : Command(creator, "nickserv/set/noop", 3, 3)
 	{
-		this->SetDesc(_("Registers another channel."));
-		this->SetSyntax(_("\037nick\037 \037channel\037 \037description\037"));
+		this->SetDesc(_("Set ability to be added in channel access list"));
+		this->SetSyntax(_("\037ON/OFF\037 \037Status\037 \037description\037"));
 	}
