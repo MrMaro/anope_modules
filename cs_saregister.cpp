@@ -13,7 +13,7 @@ class CommandCSSARegister : public Command
   
   void Execute(CommandSource &source, const std::vector<Anope::string> &params) anope_override
 	{
-		User *u = 0;
+		User *u = source.GetUser();
 		const Anope::string u_nick = params[0];
 		const Anope::string &chan = params[1];
 		const Anope::string &chdesc = params.size() > 1 ? params[2] : "";
@@ -37,7 +37,6 @@ class CommandCSSARegister : public Command
 			source.Reply(CHAN_X_NOT_IN_USE, chan.c_str());
 		else if (ci)
 			source.Reply(_("Channel \002%s\002 is already registered!"), chan.c_str());
-		
 		else
 		{
 			ci = new ChannelInfo(chan);
@@ -73,8 +72,8 @@ class CommandCSSARegister : public Command
 		this->SendSyntax(source);
 			source.Reply(" ");
 			source.Reply(_("This module lets a services operator with the\n"
-					"chanserv/saregister privileges register a\n"
-					"other channel)."));
+					"chanserv/saregister privileges register a new\n"
+					"channel for user)."));
 		return true;
 	}
 };
