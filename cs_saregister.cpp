@@ -2,6 +2,8 @@
 
 static bool SendRegmail(User *u, const NickAlias *na, BotInfo *bi);
 
+static NickAlias *Find(const Anope::string &nick);
+
 class CommandCSSARegister : public Command
 {
  public:
