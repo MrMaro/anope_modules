@@ -1,35 +1,33 @@
 #include "module.h"
 
-static bool SendRegmail(User *u, const NickAlias *na, BotInfo *bi);
-
-static NickAlias *Find(const Anope::string &nick);
 
 class CommandCSSARegister : public Command
 {
  public:
 	CommandCSSARegister(Module *creator) : Command(creator, "chanserv/saregister", 3, 3)
 	{
-		this->SetDesc(_("Registers another channel."));
-		this->SetSyntax(_("\037nick\037 \037channel\037 \037description\037"));
+		this->SetDesc(_("Registers another channel for user."));
+		this->SetSyntax(_("\037channel\037 \037nick\037 \037desc\037"));
 	}
   
   void Execute(CommandSource &source, const std::vector<Anope::string> &params) anope_override
 	{
-		const Anope::string u_nick = params[0];
-		const Anope::string &chan = params[1];
-		const Anope::string &chdesc = params.size() > 1 ? params[2] : "";
+		const Anope::string &chan = params[0];
+                const Anope::string &nick = params[1];
+                const Anope::string &chdesc = params.size() > 2 ? params[2] : "";
 		
 		const Anope::string &csregister = Config->GetModule(this->owner)->Get<const Anope::string>("registration");
-		
-		User *u = 0;
-		NickCore *nc = new NickCore(u_nick);
-		NickAlias *na = new NickAlias(u_nick, nc);
+                	
+
+                User *u = source.GetUser();
+                NickCore *nc = new NickCore(nick);
+                NickAlias *na = NickAlias::Find(nick);
 		Channel *c = Channel::Find(params[0]);
 		ChannelInfo *ci = ChannelInfo::Find(params[0]);
 
                if (Anope::ReadOnly)
 			source.Reply(_("Sorry, channel registration is temporarily disabled."));
-		else if (nc->HasExt("UNCONFIRMED"))
+                else if (nc->HasExt("UNCONFIRMED"))
 			source.Reply(_("You must confirm your account before you can register a channel."));
 		else if (chan[0] == '&')
 			source.Reply(_("Local channels cannot be registered."));
@@ -41,22 +39,15 @@ class CommandCSSARegister : public Command
 			source.Reply(CHAN_X_NOT_IN_USE, chan.c_str());
 		else if (ci)
 			source.Reply(_("Channel \002%s\002 is already registered!"), chan.c_str());
-		else
+                else if (!na)
+                        source.Reply(NICK_X_NOT_REGISTERED, nick.c_str());
+                else 
 		{
 			ci = new ChannelInfo(chan);
 			ci->SetFounder(nc);
-			ci->desc = chdesc;
-
-			if (c && !c->topic.empty())
-			{
-				ci->last_topic = c->topic;
-				ci->last_topic_setter = c->topic_setter;
-				ci->last_topic_time = c->topic_time;
-			}
-			else
-				ci->last_topic_setter = source.service->nick;
+                        ci->desc = chdesc;
 			
-			Log(LOG_COMMAND, source, this, ci);
+			Log(LOG_COMMAND, source, this, ci) << "to register on behalf of " << nick.c_str(); 
 			source.Reply(_("Channel \002%s\002 has been registered to: %s"), chan.c_str(), nc->display.c_str());
 			
 			FOREACH_MOD(OnChanRegistered, (ci));
@@ -66,7 +57,8 @@ class CommandCSSARegister : public Command
 				c->CheckModes();
 				if (u)
 					c->SetCorrectModes(u, true);
-			}
+	        	}
+
 		}
 	}
 			
@@ -78,6 +70,7 @@ class CommandCSSARegister : public Command
 			source.Reply(_("This module lets a services operator with the\n"
 					"chanserv/saregister privileges register a new\n"
 					"channel for user)."));
+
 		return true;
 	}
 };
