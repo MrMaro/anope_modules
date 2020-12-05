@@ -1,3 +1,23 @@
+/* Inspired by the original cs_saregister module by Viper.
+ * Date of Original: 15/01/2011 (by Viper)
+ * Date of This Version: 06/12/2020
+ * Rewritten for 2.0.x by Maro 
+ **********************************************
+ * Module used in: ChanServ
+ * Syntax: /msg ChanServ SAREGISTER 'Channel' 'Nick' 'Desc'
+ **********************************************
+ * Completely rewritten for Anope 2.0.
+ * Confirmed to work on 2.0.9.
+ * Did this stop working in a future version? Let me know on irc.kampungchat.org
+ ***********************************************
+ * To use, include the following in your configuration:
+ * module { name = "cs_saregister" }
+ * command { service = "ChanServ"; name = "SAREGISTER"; command = "chanserv/saregister"; permission = "chanserv/saregister"; }
+ *
+ * Don't forget to give your service opers the "chanserv/saregister" permission!
+ ************
+*/
+
 #include "module.h"
 
 
