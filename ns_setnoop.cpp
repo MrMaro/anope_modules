@@ -3,7 +3,7 @@
 class CommandNSSetNoop : public Command
 {
  public:
-	CommandNSSetNoop(Module *creator) : Command(creator, "nickserv/set/noop", size_t, min = 1) : Command(creator, sname, min, min + 1)
+	CommandNSSetNoop(Module *creator) : Command(creator, "nickserv/set/noop", 2, 2) 
 	{
 		this->SetDesc(_("Set ability to be added in channel access list"));
 		this->SetSyntax("{ON | OFF}");
@@ -34,13 +34,13 @@ class CommandNSSetNoop : public Command
 		{
 			Log(nc == source.GetAccount() ? LOG_COMMAND : LOG_ADMIN, source, this) << "to enable noop for " << na->nc->display;
 			nc->Extend<bool>("NOOP");
-			source.Reply(_("Services will from now on set status modes on %s in channels."), nc->display.c_str());
+			source.Reply(_("Services will from now on set status modes on %s all channels."), nc->display.c_str());
 		}
 		else if (param.equals_ci("OFF"))
 		{
 			Log(nc == source.GetAccount() ? LOG_COMMAND : LOG_ADMIN, source, this) << "to disable noop for " << na->nc->display;
 			nc->Shrink<bool>("NOOP");
-			source.Reply(_("Services will no longer set status modes on %s in channels."), nc->display.c_str());
+			source.Reply(_("Services will no longer set status modes on %s all channels."), nc->display.c_str());
 		}
 		else
 			this->OnSyntaxError(source, "NOOP");
