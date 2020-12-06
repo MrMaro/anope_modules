@@ -3,7 +3,7 @@
 class CommandNSSetNoop : public Command
 {
  public:
-	CommandNSSetNoop(Module *creator) : Command(creator, "nickserv/set/noop", 3, 3)
+	CommandNSSetNoop(Module *creator) : Command(creator, "nickserv/set/noop", size_t min = 1) : Command(creator, sname, min, min + 1)
 	{
 		this->SetDesc(_("Set ability to be added in channel access list"));
 		this->SetSyntax("{ON | OFF}");
@@ -61,3 +61,18 @@ class CommandNSSetNoop : public Command
 		return true;
 	}
 };
+
+class NSSetNoop : public Module
+{
+	CommandNSSetNoop commandnssetnoop;
+
+ public:
+	NSSetNoop(const Anope::string &modname, const Anope::string &creator) : Module(modname, creator, THIRD),
+	commandnssetnoop(this)
+	{
+		this->SetAuthor("Maro");
+		this->SetVersion("1.0");
+	}
+};
+
+MODULE_INIT(NSSetNoop)
