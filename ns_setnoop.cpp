@@ -3,7 +3,7 @@
 class CommandNSSetNoop : public Command
 {
  public:
-	CommandNSSetNoop(Module *creator) : Command(creator, "nickserv/set/noop", size_t min = 1) : Command(creator, sname, min, min + 1)
+	CommandNSSetNoop(Module *creator) : Command(creator, "nickserv/set/noop", size_t, min = 1) : Command(creator, sname, min, min + 1)
 	{
 		this->SetDesc(_("Set ability to be added in channel access list"));
 		this->SetSyntax("{ON | OFF}");
@@ -56,7 +56,7 @@ class CommandNSSetNoop : public Command
 		BotInfo *bi = Config->GetClient("ChanServ");
 		this->SendSyntax(source);
 		source.Reply(" ");
-		source.Reply(_("Sets whether you can be added in channel access list.\n"
+		source.Reply("Sets whether you can be added in channel access list.\n"
 				"Set to \002ON\002 to allow %s to added access on you\n"."), bi ? bi->nick.c_str() : "ChanServ");
 		return true;
 	}
