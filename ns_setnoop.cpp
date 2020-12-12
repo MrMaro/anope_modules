@@ -1,15 +1,15 @@
 #include "module.h"
 
-class CommandNSSetNoop : public Command
+class CommandNSSetNoOp : public Command
 {
  public:
-	CommandNSSetNoop(Module *creator) : Command(creator, "nickserv/set/noop", 2, 2) 
+	CommandNSSetNoOp(Module *creator, const Anope::string &sname = "nickserv/set/noop", size_t min = 1) : Command(creator, sname, min, min + 1)
 	{
-		this->SetDesc(_("Set ability to be added in channel access list"));
+		this->SetDesc(_("Sets whether syou can be added in the channel access list."));
 		this->SetSyntax("{ON | OFF}");
 	}
-	
-       void Run(CommandSource &source, const Anope::string &user, const Anope::string &param)
+
+	void Run(CommandSource &source, const Anope::string &user, const Anope::string &param)
 	{
 		if (Anope::ReadOnly)
 		{
@@ -34,13 +34,13 @@ class CommandNSSetNoop : public Command
 		{
 			Log(nc == source.GetAccount() ? LOG_COMMAND : LOG_ADMIN, source, this) << "to enable noop for " << na->nc->display;
 			nc->Extend<bool>("NOOP");
-			source.Reply(_("Services will from now on set status modes on %s all channels."), nc->display.c_str());
+			source.Reply(_("Services will from now on set status noop on for %s."), nc->display.c_str());
 		}
 		else if (param.equals_ci("OFF"))
 		{
 			Log(nc == source.GetAccount() ? LOG_COMMAND : LOG_ADMIN, source, this) << "to disable noop for " << na->nc->display;
 			nc->Shrink<bool>("NOOP");
-			source.Reply(_("Services will no longer set status modes on %s all channels."), nc->display.c_str());
+			source.Reply(_("Services will no longer set status noop on %s."), nc->display.c_str());
 		}
 		else
 			this->OnSyntaxError(source, "NOOP");
@@ -56,8 +56,8 @@ class CommandNSSetNoop : public Command
 		BotInfo *bi = Config->GetClient("ChanServ");
 		this->SendSyntax(source);
 		source.Reply(" ");
-		source.Reply("Sets whether you can be added in channel access list.\n"
-				"Set to \002ON\002 to allow %s to added access on you\n"."), bi ? bi->nick.c_str() : "ChanServ");
+		source.Reply(_("Sets whether you can be added in channel acccess list.\n"
+				"Set to \002ON\002 to allow %s to set noop modes on you automatically."), bi ? bi->nick.c_str() : "ChanServ");
 		return true;
 	}
 };
