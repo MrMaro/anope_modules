@@ -31,7 +31,7 @@ class CommandNSSetNoOp : public Command
 		
 		else if (cmd.equals_ci("SET"))
 		IRCD->SendSVSNOOP(true);
-			Extend<Anope::string>("noop", source.GetNick());
+			Extend<Anope::string>("noop", source.GetNick();
 
 			Log(LOG_ADMIN, source, this) << "SET on " << s->GetName();
 			source.Reply(_("All access from \002%s\002 have been removed."), s->GetName().c_str());
