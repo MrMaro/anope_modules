@@ -13,8 +13,8 @@ class CommandNSSetNoOp : public Command
 	void Run(CommandSource &source, const Anope::string &user, const Anope::string &param) anope_override
 	{
 		
-		const Anope::string &cmd = params[0];
-		const Anope::string &nick = params[1];
+		const Anope::string &cmd = param[0];
+		const Anope::string &user = param[1];
 		
 		if (Anope::ReadOnly)
 		{
@@ -30,18 +30,17 @@ class CommandNSSetNoOp : public Command
 		}
 		
 		else if (cmd.equals_ci("SET"))
-		IRCD->SendSVSNOOP(s, true);
+		IRCD->SendSVSNOOP(true);
 			s->Extend<Anope::string>("noop", source.GetNick());
 
 			Log(LOG_ADMIN, source, this) << "SET on " << s->GetName();
 			source.Reply(_("All access from \002%s\002 have been removed."), s->GetName().c_str());
 
-		       }
 		}
 		else if (cmd.equals_ci("REVOKE"))
 		{
 			s->Shrink<Anope::string>("noop");
-			IRCD->SendSVSNOOP(s, false);
+			IRCD->SendSVSNOOP(false);
 			Log(LOG_ADMIN, source, this) << "REVOKE on " << s->GetName();
 			source.Reply(_("All access of \002%s\002 have been reset."), s->GetName().c_str());
 		}
