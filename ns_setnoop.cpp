@@ -10,7 +10,7 @@ class CommandNSSetNoOp : public Command
 		this->SetSyntax(_("REVOKE \037nick\037"));
 	}
 
-	void Run(CommandSource &source, const Anope::string &user, const Anope::string &param) anope_override
+	void Execute(CommandSource &source, const std::vector<Anope::string> &params) anope_override
 	{
 		
 		const Anope::string &cmd = param[0];
