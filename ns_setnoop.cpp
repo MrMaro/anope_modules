@@ -3,14 +3,19 @@
 class CommandNSSetNoOp : public Command
 {
  public:
-	CommandNSSetNoOp(Module *creator, const Anope::string &sname = "nickserv/set/noop", size_t min = 1) : Command(creator, sname, min, min + 1)
+	CommandNSSetNoOp(Module *creator, const Anope::string &sname = "nickserv/set/noop", 2, 2)
 	{
 		this->SetDesc(_("Sets whether syou can be added in the channel access list."));
-		this->SetSyntax("{ON | OFF}");
+		this->SetSyntax(_("SET \037nick\037"));
+		this->SetSyntax(_("REVOKE \037nick\037"));
 	}
 
-	void Run(CommandSource &source, const Anope::string &user, const Anope::string &param)
+	void Run(CommandSource &source, const Anope::string &user, const Anope::string &param) anope_override
 	{
+		
+		const Anope::string &cmd = params[0];
+		const Anope::string &nick = params[1];
+		
 		if (Anope::ReadOnly)
 		{
 			source.Reply(READ_ONLY_MODE);
@@ -23,48 +28,45 @@ class CommandNSSetNoOp : public Command
 			source.Reply(NICK_X_NOT_REGISTERED, user.c_str());
 			return;
 		}
-		NickCore *nc = na->nc;
+		
+		else if (cmd.equals_ci("SET"))
+		IRCD->SendSVSNOOP(s, true);
+			s->Extend<Anope::string>("noop", source.GetNick());
 
-		EventReturn MOD_RESULT;
-		FOREACH_RESULT(OnSetNickOption, MOD_RESULT, (source, this, nc, param));
-		if (MOD_RESULT == EVENT_STOP)
-			return;
+			Log(LOG_ADMIN, source, this) << "SET on " << s->GetName();
+			source.Reply(_("All access from \002%s\002 have been removed."), s->GetName().c_str());
 
-		if (param.equals_ci("ON"))
-		{
-			Log(nc == source.GetAccount() ? LOG_COMMAND : LOG_ADMIN, source, this) << "to enable noop for " << na->nc->display;
-			nc->Extend<bool>("NOOP");
-			source.Reply(_("Services will from now on set status noop on for %s."), nc->display.c_str());
+		       }
 		}
-		else if (param.equals_ci("OFF"))
+		else if (cmd.equals_ci("REVOKE"))
 		{
-			Log(nc == source.GetAccount() ? LOG_COMMAND : LOG_ADMIN, source, this) << "to disable noop for " << na->nc->display;
-			nc->Shrink<bool>("NOOP");
-			source.Reply(_("Services will no longer set status noop on %s."), nc->display.c_str());
+			s->Shrink<Anope::string>("noop");
+			IRCD->SendSVSNOOP(s, false);
+			Log(LOG_ADMIN, source, this) << "REVOKE on " << s->GetName();
+			source.Reply(_("All access of \002%s\002 have been reset."), s->GetName().c_str());
 		}
 		else
-			this->OnSyntaxError(source, "NOOP");
+			this->OnSyntaxError(source, "");
 	}
+        
 
-	void Execute(CommandSource &source, const std::vector<Anope::string> &params) anope_override
+        bool OnHelp(CommandSource &source, const Anope::string &subcommand) anope_override
 	{
-		this->Run(source, source.nc->display, params[0]);
-	}
-
-	bool OnHelp(CommandSource &source, const Anope::string &) anope_override
-	{
-		BotInfo *bi = Config->GetClient("ChanServ");
 		this->SendSyntax(source);
 		source.Reply(" ");
-		source.Reply(_("Sets whether you can be added in channel acccess list.\n"
-				"Set to \002ON\002 to allow %s to set noop modes on you automatically."), bi ? bi->nick.c_str() : "ChanServ");
+		source.Reply(_("\002SET\002 disable access from the given\n"
+				"\002nick\002 and prevents operators from opering\n"
+				"\002REVOKE\002 removes this\n"
+				"restriction."));
 		return true;
 	}
 };
 
-class NSSetNoop : public Module
+class OSNOOP : public Module
 {
-	CommandNSSetNoop commandnssetnoop;
+	CommandNSSETNOOP commandnssetnoop;
+	PrimitiveExtensibleItem<Anope::string> noop;
+
 
  public:
 	NSSetNoop(const Anope::string &modname, const Anope::string &creator) : Module(modname, creator, THIRD),
