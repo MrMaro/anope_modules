@@ -31,7 +31,7 @@ class CommandNSSetNoOp : public Command
 		
 		else if (cmd.equals_ci("SET"))
 		IRCD->SendSVSNOOP(true);
-			s->Extend<Anope::string>("noop", source.GetNick());
+			Extend<Anope::string>("noop", source.GetNick());
 
 			Log(LOG_ADMIN, source, this) << "SET on " << s->GetName();
 			source.Reply(_("All access from \002%s\002 have been removed."), s->GetName().c_str());
@@ -39,7 +39,7 @@ class CommandNSSetNoOp : public Command
 		}
 		if (cmd.equals_ci("REVOKE"))
 		{
-			s->Shrink<Anope::string>("noop");
+			Shrink<Anope::string>("noop");
 			IRCD->SendSVSNOOP(false);
 			Log(LOG_ADMIN, source, this) << "REVOKE on " << s->GetName();
 			source.Reply(_("All access of \002%s\002 have been reset."), s->GetName().c_str());
@@ -51,15 +51,13 @@ class CommandNSSetNoOp : public Command
 
         bool OnHelp(CommandSource &source, const Anope::string &subcommand) anope_override
 	{
-		SendSyntax(source);
 		source.Reply(" ");
 		source.Reply(_("\002SET\002 disable access from the given\n"
 				"\002nick\002 and prevents operators from opering\n"
 				"\002REVOKE\002 removes this\n"
 				"restriction."));
 		return true;
-	}
-};
+	};
 
 class OSNOOP : public Module
 {
