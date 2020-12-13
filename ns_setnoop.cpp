@@ -3,7 +3,7 @@
 class CommandNSSetNoOp : public Command
 {
  public:
-	CommandNSSetNoOp(Module *creator, const Anope::string &sname = "nickserv/set/noop", 2, 2)
+	CommandNSSetNoOp(Module *creator, const Anope::string &sname = "nickserv/set/noop", 2)
 	{
 		this->SetDesc(_("Sets whether syou can be added in the channel access list."));
 		this->SetSyntax(_("SET \037nick\037"));
@@ -37,7 +37,7 @@ class CommandNSSetNoOp : public Command
 			source.Reply(_("All access from \002%s\002 have been removed."), s->GetName().c_str());
 
 		}
-		else if (cmd.equals_ci("REVOKE"))
+		if (cmd.equals_ci("REVOKE"))
 		{
 			s->Shrink<Anope::string>("noop");
 			IRCD->SendSVSNOOP(false);
@@ -46,12 +46,12 @@ class CommandNSSetNoOp : public Command
 		}
 		else
 			this->OnSyntaxError(source, "");
-	}
+	};
         
 
         bool OnHelp(CommandSource &source, const Anope::string &subcommand) anope_override
 	{
-		this->SendSyntax(source);
+		SendSyntax(source);
 		source.Reply(" ");
 		source.Reply(_("\002SET\002 disable access from the given\n"
 				"\002nick\002 and prevents operators from opering\n"
