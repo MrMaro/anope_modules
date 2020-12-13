@@ -13,8 +13,8 @@ class CommandNSSetNoOp : public Command
 	void Execute(CommandSource &source, const std::vector<Anope::string> &params) anope_override
 	{
 		
-		const Anope::string &cmd = param[0];
-		const Anope::string &user = param[1];
+		const Anope::string &cmd = params[0];
+		const Anope::string &user = params[1];
 		
 		if (Anope::ReadOnly)
 		{
