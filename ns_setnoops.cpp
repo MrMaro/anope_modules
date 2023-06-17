@@ -2,7 +2,7 @@
  * Prevents services from setting modes upon you automatically.
  */
 
-#include "list.h"
+#include "module.h"
 
 DECLARE_MODULE_V1
 (
