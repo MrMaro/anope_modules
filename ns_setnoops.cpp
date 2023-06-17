@@ -2,9 +2,6 @@
  * Prevents services from setting modes upon you automatically.
  */
 
-#include "atheme.h"
-#include "uplink.h"
-#include "list_common.h"
 #include "list.h"
 
 DECLARE_MODULE_V1
